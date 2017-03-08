@@ -1,8 +1,10 @@
 // 这是我们的玩家要躲避的敌人 
-var Enemy = function() {
+var Enemy = function(x, y, rand) {
     // 要应用到每个敌人的实例的变量写在这里
     // 我们已经提供了一个来帮助你实现更多
-
+    this.x = x;
+    this.y = y;
+    this.rand = rand;
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
 };
@@ -12,6 +14,7 @@ var Enemy = function() {
 Enemy.prototype.update = function(dt) {
     // 你应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
     // 都是以同样的速度运行的
+    this.x = (this.x > c.width + 50) ? -50 : (this.x + this.rand * (1 + dt));
 };
 
 // 此为游戏必须的函数，用来在屏幕上画出敌人，
@@ -21,12 +24,56 @@ Enemy.prototype.render = function() {
 
 // 现在实现你自己的玩家类
 // 这个类需要一个 update() 函数， render() 函数和一个 handleInput()函数
+var Player = function(x, y) {
+    this.sprite = 'images/char-horn-girl.png';
+    this.x = x;
+    this.y = y;
+};
 
+Player.prototype.update = function(dt) {
+
+};
+
+Player.prototype.render = function() {
+    var imgSource = Resources.get(this.sprite);
+    if (imgSource) {
+        ctx.drawImage(imgSource, this.x, this.y);
+    }
+};
+
+Player.prototype.handleInput = function(key) {
+    switch (key) {
+        case "left":
+            this.x = (this.x == 0) ? this.x : this.x - rowUnit;
+            break;
+        case "up":
+            this.y = (this.y == 0) ? this.y : this.y - colUnit;
+            break;
+        case "right":
+            this.x = (this.x / rowUnit == 4) ? this.x : this.x + rowUnit;
+            break;
+        case "down":
+            this.y  = (this.y / colUnit == 5) ? this.y : this.y + colUnit;
+            break;
+    }
+};
 
 // 现在实例化你的所有对象
 // 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
 // 把玩家对象放进一个叫 player 的变量里面
+const rowUnit = 101,
+      colUnit = 75;
+var rand = Math.floor((Math.random() * 10) + 1);
+var enemy1 = new Enemy(0, 1 * colUnit, rand);
 
+rand = Math.floor((Math.random() * 10) + 1);
+var enemy2 = new Enemy(0, 2 * colUnit, rand);
+
+rand = Math.floor((Math.random() * 10) + 1);
+var enemy3 = new Enemy(0, 3 * colUnit, rand);
+
+var allEnemies = [enemy1, enemy2, enemy3];
+var player = new Player(2 * rowUnit, 5 * colUnit);
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
 // 方法里面。你不需要再更改这段代码了。

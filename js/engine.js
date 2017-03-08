@@ -68,6 +68,10 @@ var Engine = (function(global) {
         // checkCollisions();
     }
 
+    function checkCollisions() {
+        //TODO:
+    }
+
     /* 这个函数会遍历在 app.js 定义的存放所有敌人实例的数组，并且调用他们的 update()
      * 函数，然后，它会调用玩家对象的 update 方法，最后这个函数被 update 函数调用。
      * 这些更新函数应该只聚焦于更新和对象相关的数据/属性。把重绘的工作交给 render 函数。
@@ -140,7 +144,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-horn-girl.png'
     ]);
     Resources.onReady(init);
 
@@ -148,4 +153,5 @@ var Engine = (function(global) {
      * 对象。从而开发者就可以在他们的app.js文件里面更容易的使用它。
      */
     global.ctx = ctx;
+    global.c = canvas;
 })(this);
