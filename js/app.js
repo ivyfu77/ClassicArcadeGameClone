@@ -1,12 +1,12 @@
-// 这是我们的玩家要躲避的敌人 
-var Enemy = function(x, y, rand) {
+// Define enemy player should stay away
+var Enemy = function(url, x, y, rand) {
     // 要应用到每个敌人的实例的变量写在这里
     // 我们已经提供了一个来帮助你实现更多
     this.x = x;
     this.y = y;
     this.rand = rand;
     // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite = url;
 };
 
 // 此为游戏必须的函数，用来更新敌人的位置
@@ -14,7 +14,7 @@ var Enemy = function(x, y, rand) {
 Enemy.prototype.update = function(dt) {
     // 你应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
     // 都是以同样的速度运行的
-    this.x = (this.x > c.width + 50) ? -50 : (this.x + this.rand * (1 + dt));
+    this.x = (this.x > c.width + 50) ? -50 : (this.x + this.rand);
 };
 
 // 此为游戏必须的函数，用来在屏幕上画出敌人，
@@ -64,13 +64,13 @@ Player.prototype.handleInput = function(key) {
 const rowUnit = 101,
       colUnit = 75;
 var rand = Math.floor((Math.random() * 10) + 1);
-var enemy1 = new Enemy(0, 1 * colUnit, rand);
+var enemy1 = new Enemy('images/enemy-bug2.png', 0, 1 * colUnit, rand);
 
 rand = Math.floor((Math.random() * 10) + 1);
-var enemy2 = new Enemy(0, 2 * colUnit, rand);
+var enemy2 = new Enemy('images/enemy-bug1.png', 0, 2 * colUnit, rand);
 
 rand = Math.floor((Math.random() * 10) + 1);
-var enemy3 = new Enemy(0, 3 * colUnit, rand);
+var enemy3 = new Enemy('images/enemy-bug.png', 0, 3 * colUnit, rand);
 
 var allEnemies = [enemy1, enemy2, enemy3];
 var player = new Player(2 * rowUnit, 5 * colUnit);

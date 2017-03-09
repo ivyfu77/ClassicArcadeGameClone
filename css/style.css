@@ -1,3 +1,23 @@
 body {
     text-align: center;
 }
+
+#play {
+	display: none;
+	border: 0;
+	font-size: 1.5em;
+	color: rgba(255, 255, 255, 0.8);
+	border-radius: 1.5em;
+	font-family: fantasy;
+	background-color: rgba(103, 58, 183, 0.31);
+	width: 10em;
+	height: 3em;
+	position: absolute;
+	left: calc(50% - 5em);
+	top: 395px;
+}
+#play:hover {
+	cursor: pointer;
+	background-color: rgba(103, 58, 183, 0.4);
+	color: rgba(255, 255, 255, 1);
+}
