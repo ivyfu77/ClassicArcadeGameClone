@@ -20,6 +20,9 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         play = true, //store the flag of pause/play switch
+        isWin = false, //store the flag if the player has won
+        sparkleNum = 0,
+        showNum = 0,
         lastTime;
 
     canvas.width = 505;
@@ -38,10 +41,8 @@ var Engine = (function(global) {
         /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
          * 可以使动画更加顺畅。
          */
-        if (play) {
-            update(dt);
-            render();
-        }
+        update(dt);
+        render();
 
         /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
         lastTime = now;
@@ -49,7 +50,6 @@ var Engine = (function(global) {
         /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
          * 来调用这个函数
          */
-        // Use play as a switch to control if continue playing
         win.requestAnimationFrame(main);
 
     }
@@ -71,6 +71,7 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         checkCollisions();
+        checkWin();
     }
     
     function checkCollisions() {
@@ -82,7 +83,7 @@ var Engine = (function(global) {
                 play = false;
 
                 // Show "Play Again" button
-                var btn = document.getElementById("play");
+                var btn = doc.getElementById("play");
                 btn.style.display = "block";
                 return;
             }
@@ -90,10 +91,22 @@ var Engine = (function(global) {
         return;
     }
 
+    function checkWin() {
+        if (Math.floor(player.y / colUnit) == 0) {
+            play = false;
+            isWin = true;
+            // Show "Play Again" button
+            var btn = doc.getElementById("play");
+            btn.style.display = "block";
+        }
+
+    }
+
     function startPlay() {
         play = true;
+        isWin = false;
         reset();
-        var btn = document.getElementById("play");
+        var btn = doc.getElementById("play");
         btn.style.display = "none";
     }
 
@@ -102,10 +115,16 @@ var Engine = (function(global) {
      * 这些更新函数应该只聚焦于更新和对象相关的数据/属性。把重绘的工作交给 render 函数。
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
-        });
-        player.update();
+        if (play) {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt);
+            });
+            player.update();
+        }
+
+        // if (isWin) {
+        //     setTimeout(star1.sparkle(), 2000);
+        // }
     }
 
     /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
@@ -139,17 +158,20 @@ var Engine = (function(global) {
         }
 
         renderEntities();
-        if (!play) {
+        ctx.fillStyle = "rgba(255, 152, 0, 0.85)";
+        ctx.textAlign = "center";
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "white";
+        if (!play && !isWin) {
             // Show "Game Over"
-            play = false;
-            ctx.fillStyle = "rgba(255, 152, 0, 0.85)";
-            ctx.textAlign = "center";
             ctx.font = "60px Impact";
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "white";
-
             ctx.fillText("Game Over", canvas.width/2, 200);
             ctx.strokeText("Game Over", canvas.width/2, 200);
+        } else if (isWin) {
+            // Show "Well Done, You Win!"
+            ctx.font = "50px Impact";
+            ctx.fillText("Well Done, You Win!", canvas.width/2, 200);
+            ctx.strokeText("Well Done, You Win!", canvas.width/2, 200);
         }
     }
 
@@ -157,20 +179,41 @@ var Engine = (function(global) {
      * 对象中定义的 render 方法。
      */
     function renderEntities() {
-        /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+        if (play) {
+            /* 遍历在 allEnemies 数组中存放的作于对象然后调用你事先定义的 render 函数 */
+            allEnemies.forEach(function(enemy) {
+                enemy.render();
+            });
+            player.render();
+        }
 
-        player.render();
+        /*----Render the sparkling stars--------------*/
+        //sparkleNum: controll the period not showing the stars
+        //showNum: controll the period showing the stars
+        if (isWin) {
+            if (sparkleNum < 20) {
+
+                sparkleNum ++;
+            } else {
+                if (showNum < 20) {
+                    showNum ++;
+                    allStars.forEach(function(star) {
+                        star.render();
+                    });
+                } else {
+                    showNum = 0;
+                    sparkleNum = 0;
+                }
+            }
+            player.render();
+        }
+        /*--------------------------------------------*/
+
     }
 
-    /* 这个函数现在没干任何事，但是这会是一个好地方让你来处理游戏重置的逻辑。可能是一个
-     * 从新开始游戏的按钮，也可以是一个游戏结束的画面，或者其它类似的设计。它只会被 init()
-     * 函数调用一次？？
-     */
+    // Set enemies and player go back start position
     function reset() {
-        // Set enemies and player go back start position
+        
         allEnemies.forEach(function(enemy) {
             enemy.x = -101;
         });
@@ -189,7 +232,8 @@ var Engine = (function(global) {
         'images/enemy-bug1.png',
         'images/enemy-bug2.png',
         'images/char-boy.png',
-        'images/char-horn-girl.png'
+        'images/char-horn-girl.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 
@@ -199,4 +243,6 @@ var Engine = (function(global) {
     global.ctx = ctx;
     global.c = canvas;
     global.startPlay = startPlay;
+    global.play = play;
+    global.isWin = isWin;
 })(this);

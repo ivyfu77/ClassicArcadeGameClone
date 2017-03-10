@@ -42,19 +42,35 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(key) {
-    switch (key) {
-        case "left":
-            this.x = (this.x == 0) ? this.x : this.x - rowUnit;
-            break;
-        case "up":
-            this.y = (this.y == 0) ? this.y : this.y - colUnit;
-            break;
-        case "right":
-            this.x = (this.x / rowUnit == 4) ? this.x : this.x + rowUnit;
-            break;
-        case "down":
-            this.y  = (this.y / colUnit == 5) ? this.y : this.y + colUnit;
-            break;
+    if (play || isWin) {
+        switch (key) {
+            case "left":
+                this.x = (this.x == 0) ? this.x : this.x - rowUnit;
+                break;
+            case "up":
+                this.y = (this.y == 0) ? this.y : this.y - colUnit;
+                break;
+            case "right":
+                this.x = (this.x / rowUnit == 4) ? this.x : this.x + rowUnit;
+                break;
+            case "down":
+                this.y  = (this.y / colUnit == 5) ? this.y : this.y + colUnit;
+                break;
+        }
+    }
+};
+
+var Star = function(x, y) {
+    this.sprite = "images/Star.png";
+    this.x = x;
+    this.y = y;
+    this.preX = this.x;
+};
+
+Star.prototype.render = function() {
+    var imgSource = Resources.get(this.sprite);
+    if (imgSource) {
+        ctx.drawImage(imgSource, this.x, this.y);
     }
 };
 
@@ -74,6 +90,13 @@ var enemy3 = new Enemy('images/enemy-bug.png', 0, 3 * colUnit, rand);
 
 var allEnemies = [enemy1, enemy2, enemy3];
 var player = new Player(2 * rowUnit, 5 * colUnit);
+
+var star1 = new Star(1 * rowUnit, 2 * colUnit);
+var star2 = new Star(3 * rowUnit + 40, 1 * colUnit - 10);
+var star3 = new Star(4 * rowUnit - 40, 4 * colUnit + 15);
+var star4 = new Star(0 + 40, 4 * colUnit + 15);
+var star5 = new Star(-5, 10);
+var allStars = [star1, star2, star3, star4, star5];
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
 // 方法里面。你不需要再更改这段代码了。
