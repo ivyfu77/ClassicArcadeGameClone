@@ -19,8 +19,6 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        play = true, //store the flag of pause/play switch
-        isWin = false, //store the flag if the player has won
         sparkleNum = 0,
         showNum = 0,
         lastTime;
@@ -41,6 +39,7 @@ var Engine = (function(global) {
         /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
          * 可以使动画更加顺畅。
          */
+        //console.log("dt: ", dt);
         update(dt);
         render();
 
@@ -76,7 +75,7 @@ var Engine = (function(global) {
     
     function checkCollisions() {
         allEnemies.forEach(function(enemy) {
-            //Check if player and one of the enemies at same position
+            //Check if player and one of the enemies at the same position
             if (Math.floor(enemy.x / rowUnit) == Math.floor(player.x / rowUnit) && 
                 Math.floor(enemy.y / colUnit) == Math.floor(player.y / colUnit)) {
                 
@@ -105,9 +104,19 @@ var Engine = (function(global) {
     function startPlay() {
         play = true;
         isWin = false;
+
+        allEnemies.forEach(function(enemy) {
+            enemy.rand = getRandomNum(1, 10);
+        });
         reset();
+
+        //Hide the "Play Again" button
         var btn = doc.getElementById("play");
         btn.style.display = "none";
+    }
+
+    function getRandomNum(min, max) {
+        return Math.floor((Math.random() * max) + min);
     }
 
     /* 这个函数会遍历在 app.js 定义的存放所有敌人实例的数组，并且调用他们的 update()
@@ -119,12 +128,7 @@ var Engine = (function(global) {
             allEnemies.forEach(function(enemy) {
                 enemy.update(dt);
             });
-            player.update();
         }
-
-        // if (isWin) {
-        //     setTimeout(star1.sparkle(), 2000);
-        // }
     }
 
     /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
@@ -163,12 +167,12 @@ var Engine = (function(global) {
         ctx.lineWidth = 2;
         ctx.strokeStyle = "white";
         if (!play && !isWin) {
-            // Show "Game Over"
+            // Show "Game Over" on canvas
             ctx.font = "60px Impact";
             ctx.fillText("Game Over", canvas.width/2, 200);
             ctx.strokeText("Game Over", canvas.width/2, 200);
         } else if (isWin) {
-            // Show "Well Done, You Win!"
+            // Show "Well Done, You Win!" on canvas
             ctx.font = "50px Impact";
             ctx.fillText("Well Done, You Win!", canvas.width/2, 200);
             ctx.strokeText("Well Done, You Win!", canvas.width/2, 200);
@@ -213,7 +217,7 @@ var Engine = (function(global) {
 
     // Set enemies and player go back start position
     function reset() {
-        
+        play = true;
         allEnemies.forEach(function(enemy) {
             enemy.x = -101;
         });
@@ -243,6 +247,5 @@ var Engine = (function(global) {
     global.ctx = ctx;
     global.c = canvas;
     global.startPlay = startPlay;
-    global.play = play;
-    global.isWin = isWin;
+
 })(this);

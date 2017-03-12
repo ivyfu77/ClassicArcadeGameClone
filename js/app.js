@@ -14,10 +14,12 @@ var Enemy = function(url, x, y, rand) {
 Enemy.prototype.update = function(dt) {
     // 你应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
     // 都是以同样的速度运行的
-    this.x = (this.x > c.width + 50) ? -50 : (this.x + this.rand);
+    // Set base distance to get the scale: dt/base
+    let base = 0.016;
+    this.x = (this.x > c.width + 50) ? -50 : Math.floor(this.x + dt/base * this.rand);
 };
 
-// 此为游戏必须的函数，用来在屏幕上画出敌人，
+// Render the enemies on canvas
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -30,10 +32,6 @@ var Player = function(x, y) {
     this.y = y;
 };
 
-Player.prototype.update = function(dt) {
-
-};
-
 Player.prototype.render = function() {
     var imgSource = Resources.get(this.sprite);
     if (imgSource) {
@@ -42,7 +40,8 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(key) {
-    if (play || isWin) {
+    console.log("handleInput()- play & isWin:", play, isWin);
+    if (play === true || isWin === true) {
         switch (key) {
             case "left":
                 this.x = (this.x == 0) ? this.x : this.x - rowUnit;
@@ -60,11 +59,11 @@ Player.prototype.handleInput = function(key) {
     }
 };
 
+//Define a star class, for showing win-animation
 var Star = function(x, y) {
     this.sprite = "images/Star.png";
     this.x = x;
     this.y = y;
-    this.preX = this.x;
 };
 
 Star.prototype.render = function() {
@@ -73,6 +72,9 @@ Star.prototype.render = function() {
         ctx.drawImage(imgSource, this.x, this.y);
     }
 };
+
+var play = true, //store the flag of pause/play switch
+    isWin = false; //store the flag if the player has won
 
 // 现在实例化你的所有对象
 // 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
