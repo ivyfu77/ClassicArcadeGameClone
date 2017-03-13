@@ -1,6 +1,15 @@
-前端纳米学位街机游戏项目
+#Classic Arcade Game Clone
 ===============================
+This is a JavaScript practise project. Using Object-Oriented programming theory and Canvas to realize the game - the player need go through the bugs and reach the top line. When Game Over or Win the Game, need to show proper animation and restart button.
 
-学生应该用这个[评审标准](https://review.udacity.com/#!/projects/2696458597/rubric)来自我检查自己提交的代码。 确认自己写的函数要是**面向对象的** -  要么是类函数（就像函数 Player 和 Enemy）要么是类的原型链上的函数比如 Enemy.prototype.checkCollisions ， 在类函数里面或者类的原型链函数里面适当的使用关键词 'this' 来引用调用该函数的对象实例。最后保证你的**readme.md**文件要写明关于如何运行和如何玩你的街机游戏的指引。
+## Install
+1. Clone all the files to your local enviroment:
+`$ git clone https://github.com/ivyfu77/ClassicArcadeGameClone.git`
+You need to put all the files under your web server, for example **XAMPP/htdocs**
+2. Open the link under your localhost, for example
+`http://localhost/ClassicArcadeGameClone/`
 
-关于如何开始这个项目的更详细的指导，可以查阅这一份[指南](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true)
+## How to play
+- When you open the game correctly, you should see interface like this
+![Game's main interface](https://www.dropbox.com/s/5yfjxqx8o2uzcda/Project1-GameMainInterface.png?dl=0)
+- Use direction keys (up, down, left, right) to controll he player moving
