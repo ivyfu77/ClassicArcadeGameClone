@@ -25,3 +25,8 @@ You need to put all the files under your web server, for example **XAMPP/htdocs*
 
 - When player successfully reach the top line, you Win!!  
 ![You Win the Game](https://github.com/ivyfu77/ClassicArcadeGameClone/blob/develop/images/Project1-WinTheGame.png)
+
+- Click the "Play Again" button, to restart a new game.
+
+## Contact
+Welcome to contact me by email: fuqiuhong77@gmail.com to discuss any question about this project. 
