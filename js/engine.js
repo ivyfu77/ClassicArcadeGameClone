@@ -1,19 +1,11 @@
 /* Engine.js
-* 这个文件提供了游戏循环玩耍的功能（更新敌人和渲染）
- * 在屏幕上画出出事的游戏面板，然后调用玩家和敌人对象的 update / render 函数（在 app.js 中定义的）
- *
- * 一个游戏引擎的工作过程就是不停的绘制整个游戏屏幕，和小时候你们做的 flipbook 有点像。当
- * 玩家在屏幕上移动的时候，看上去就是图片在移动或者被重绘。但这都是表面现象。实际上是整个屏幕
- * 被重绘导致这样的动画产生的假象
-
- * 这个引擎是可以通过 Engine 变量公开访问的，而且它也让 canvas context (ctx) 对象也可以
- * 公开访问，以此使编写app.js的时候更加容易
+ * This file realize this game's playing functions (Update & Render)
  */
 
 var Engine = (function(global) {
-    /* 实现定义我们会在这个作用于用到的变量
-     * 创建 canvas 元素，拿到对应的 2D 上下文
-     * 设置 canvas 元素的高/宽 然后添加到dom中
+    /* Define all the variables
+     * Create canvas element, get the 2D context
+     * Set canvas' width & height then add it to DOM
      */
     var doc = global.document,
         win = global.window,
@@ -27,34 +19,28 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
-    /* 这个函数是整个游戏的主入口，负责适当的调用 update / render 函数 */
+    /* Main entrance of the game, call update / render function when necessary */
     function main() {
-        /* 如果你想要更平滑的动画过度就需要获取时间间隙。因为每个人的电脑处理指令的
-         * 速度是不一样的，我们需要一个对每个人都一样的常数（而不管他们的电脑有多快）
-         * 就问你屌不屌！
+        /* Get the time distance as a parameter when call update()
+         * Help enemies moving at the same speed in different computers
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
-        /* 调用我们的 update / render 函数， 传递事件间隙给 update 函数因为这样
-         * 可以使动画更加顺畅。
-         */
-        //console.log("dt: ", dt);
         update(dt);
         render();
 
-        /* 设置我们的 lastTime 变量，它会被用来决定 main 函数下次被调用的事件。 */
+        /* Set lastTime to get the dt at next call of main() */
         lastTime = now;
 
-        /* 在浏览准备好调用重绘下一个帧的时候，用浏览器的 requestAnimationFrame 函数
-         * 来调用这个函数
+        /* Using requestAnimationFrame() realize calling main() in loop
          */
         win.requestAnimationFrame(main);
 
     }
 
-    /* 这个函数调用一些初始化工作，特别是设置游戏必须的 lastTime 变量，这些工作只用
-     * 做一次就够了
+    /* Initialize the game enviroment, set lastTime
+     * Only need to call once at the begining
      */
     function init() {
         reset();
@@ -62,10 +48,10 @@ var Engine = (function(global) {
         main();
     }
 
-    /* 这个函数被 main 函数（我们的游戏主循环）调用，它本身调用所有的需要更新游戏角色
-     * 数据的函数，取决于你怎样实现碰撞检测（意思是如何检测两个角色占据了同一个位置，
-     * 比如你的角色死的时候），你可能需要在这里调用一个额外的函数。现在我们已经把这里
-     * 注释了，你可以在这里实现，也可以在 app.js 对应的角色类里面实现。
+    /* Define how to update the playing canvas during the game
+     * 1. Update all the game entities
+     * 2. Check if player meet any of the enemies
+     * 3. Check if player reach the bottom line (Win)
      */
     function update(dt) {
         updateEntities(dt);
@@ -73,6 +59,7 @@ var Engine = (function(global) {
         checkWin();
     }
     
+    // Check if player meet any of the enemies, if yes stop the game and show "Play Again" button
     function checkCollisions() {
         allEnemies.forEach(function(enemy) {
             //Check if player and one of the enemies at the same position
@@ -90,6 +77,7 @@ var Engine = (function(global) {
         return;
     }
 
+    // Check if player win the game, if yes stop the game and set isWin flag as true
     function checkWin() {
         if (Math.floor(player.y / colUnit) == 0) {
             play = false;
@@ -101,10 +89,12 @@ var Engine = (function(global) {
 
     }
 
+    // Define the function when click the 'Play Again' button
     function startPlay() {
         play = true;
         isWin = false;
 
+        // Loop all enemy instances to reset the rand prop (Realize random speed when resart the game)
         allEnemies.forEach(function(enemy) {
             enemy.rand = getRandomNum(1, 10);
         });
@@ -119,9 +109,7 @@ var Engine = (function(global) {
         return Math.floor((Math.random() * max) + min);
     }
 
-    /* 这个函数会遍历在 app.js 定义的存放所有敌人实例的数组，并且调用他们的 update()
-     * 函数，然后，它会调用玩家对象的 update 方法，最后这个函数被 update 函数调用。
-     * 这些更新函数应该只聚焦于更新和对象相关的数据/属性。把重绘的工作交给 render 函数。
+    /* Loop allEnemies array, update all enemies' location props
      */
     function updateEntities(dt) {
         if (play) {
@@ -131,32 +119,28 @@ var Engine = (function(global) {
         }
     }
 
-    /* 这个函数做了一些游戏的初始渲染，然后调用 renderEntities 函数。记住，这个函数
-     * 在每个游戏的时间间隙都会被调用一次（或者说游戏引擎的每个循环），因为这就是游戏
-     * 怎么工作的，他们就像是那种每一页上都画着不同画儿的书，快速翻动的时候就会出现是
-     * 动画的幻觉，但是实际上，他们只是不停的在重绘整个屏幕。
+    /* Render game interface, will be called during each loop
+     * 1. Render the game background
+     * 2. Render all game entites
+     * 3. Render different msg when "Game Over" & "Win the Game"
      */
     function render() {
-        /* 这个数组保存着游戏关卡的特有的行对应的图片相对路径。 */
+        /* Define background img source */
         var rowImages = [
-                'images/water-block.png',   // 这一行是河。
-                'images/stone-block.png',   // 第一行石头
-                'images/stone-block.png',   // 第二行石头
-                'images/stone-block.png',   // 第三行石头
-                'images/grass-block.png',   // 第一行草地
-                'images/grass-block.png'    // 第二行草地
+                'images/water-block.png',   // First line of river
+                'images/stone-block.png',   // First line of stone
+                'images/stone-block.png',   // Second line of stone
+                'images/stone-block.png',   // Third line of stone
+                'images/grass-block.png',   // First line of grass
+                'images/grass-block.png'    // Second line of grass
             ],
             numRows = 6,
             numCols = 5,
             row, col;
 
-        /* 便利我们上面定义的行和列，用 rowImages 数组，在各自的各个位置绘制正确的图片 */
+        /* Use row, col and rowImages, rendering the right imgs */
         for (row = 0; row < numRows; row++) {
             for (col = 0; col < numCols; col++) {
-                /* 这个 canvas 上下文的 drawImage 函数需要三个参数，第一个是需要绘制的图片
-                 * 第二个和第三个分别是起始点的x和y坐标。我们用我们事先写好的资源管理工具来获取
-                 * 我们需要的图片，这样我们可以享受缓存图片的好处，因为我们会反复的用到这些图片
-                 */
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
@@ -179,8 +163,8 @@ var Engine = (function(global) {
         }
     }
 
-    /* 这个函数会在每个时间间隙被 render 函数调用。他的目的是分别调用你在 enemy 和 player
-     * 对象中定义的 render 方法。
+    /* Render all enemies and player
+     * - Will be called during each main() loop
      */
     function renderEntities() {
         if (play) {
@@ -225,8 +209,8 @@ var Engine = (function(global) {
         player.y = 5 * colUnit;
     }
 
-    /* 紧接着我们来加载我们知道的需要来绘制我们游戏关卡的图片。然后把 init 方法设置为回调函数。
-     * 那么党这些图片都已经加载完毕的时候游戏就会开始。
+    /* Preload all necessary imgs, set init() as callback function
+     * When finish loading all imgs game will begin
      */
     Resources.load([
         'images/stone-block.png',
@@ -241,8 +225,8 @@ var Engine = (function(global) {
     ]);
     Resources.onReady(init);
 
-    /* 把 canvas 上下文对象绑定在 global 全局变量上（在浏览器运行的时候就是 window
-     * 对象。从而开发者就可以在他们的app.js文件里面更容易的使用它。
+    /* Set canvas context (ctx), canvas, startPlay() as global variable
+     * We can use them in app.js directly
      */
     global.ctx = ctx;
     global.c = canvas;

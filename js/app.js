@@ -1,19 +1,19 @@
-// Define enemy player should stay away
+// Define Enemy class
 var Enemy = function(url, x, y, rand) {
-    // 要应用到每个敌人的实例的变量写在这里
-    // 我们已经提供了一个来帮助你实现更多
+    // Enemy's location (x, y)
     this.x = x;
     this.y = y;
+
+    // Use a random value to controll moving speed
     this.rand = rand;
-    // 敌人的图片或者雪碧图，用一个我们提供的工具函数来轻松的加载文件
+
+    // Enemy's img file
     this.sprite = url;
 };
 
-// 此为游戏必须的函数，用来更新敌人的位置
-// 参数: dt ，表示时间间隙
+// Define this function to update enemies' locations
+// parameters: dt (Time distance between two updates, make sure the same moving speed on different computers)
 Enemy.prototype.update = function(dt) {
-    // 你应该给每一次的移动都乘以 dt 参数，以此来保证游戏在所有的电脑上
-    // 都是以同样的速度运行的
     // Set base distance to get the scale: dt/base
     let base = 0.016;
     this.x = (this.x > c.width + 50) ? -50 : Math.floor(this.x + dt/base * this.rand);
@@ -24,14 +24,14 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// 现在实现你自己的玩家类
-// 这个类需要一个 update() 函数， render() 函数和一个 handleInput()函数
+// Define Player class
 var Player = function(x, y) {
     this.sprite = 'images/char-horn-girl.png';
     this.x = x;
     this.y = y;
 };
 
+// Define Player's render function (Showing player img on canvas)
 Player.prototype.render = function() {
     var imgSource = Resources.get(this.sprite);
     if (imgSource) {
@@ -39,8 +39,12 @@ Player.prototype.render = function() {
     }
 };
 
+// Response the keyup event except Game Over
 Player.prototype.handleInput = function(key) {
-    console.log("handleInput()- play & isWin:", play, isWin);
+    //console.log("handleInput()- play & isWin:", play, isWin);
+
+    // Game Over: will not response the keyup event
+    // Win the Game: still can use direction keys to controll the player
     if (play === true || isWin === true) {
         switch (key) {
             case "left":
@@ -76,21 +80,24 @@ Star.prototype.render = function() {
 var play = true, //store the flag of pause/play switch
     isWin = false; //store the flag if the player has won
 
-// 现在实例化你的所有对象
-// 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
-// 把玩家对象放进一个叫 player 的变量里面
+// Define unit consts for calculating (x, y) easily
 const rowUnit = 101,
       colUnit = 75;
-var rand = Math.floor((Math.random() * 10) + 1);
+
+// Define Enemies' instances, use random value setting different speeds
+var rand = Math.floor((Math.random() * 10) + 1); // Get a random number between 1 - 10
 var enemy1 = new Enemy('images/enemy-bug2.png', 0, 1 * colUnit, rand);
 
-rand = Math.floor((Math.random() * 10) + 1);
+rand = Math.floor((Math.random() * 10) + 1); // Get a new random number between 1 - 10
 var enemy2 = new Enemy('images/enemy-bug1.png', 0, 2 * colUnit, rand);
 
-rand = Math.floor((Math.random() * 10) + 1);
+rand = Math.floor((Math.random() * 10) + 1); // Get a new random number between 1 - 10
 var enemy3 = new Enemy('images/enemy-bug.png', 0, 3 * colUnit, rand);
 
+// Put all enemies in allEnemies array
 var allEnemies = [enemy1, enemy2, enemy3];
+
+// Defien a Player instance
 var player = new Player(2 * rowUnit, 5 * colUnit);
 
 var star1 = new Star(1 * rowUnit, 2 * colUnit);
@@ -100,8 +107,7 @@ var star4 = new Star(0 + 40, 4 * colUnit + 15);
 var star5 = new Star(-5, 10);
 var allStars = [star1, star2, star3, star4, star5];
 
-// 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Play.handleInput()
-// 方法里面。你不需要再更改这段代码了。
+// Add a listener function to response direction-keys-click event
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
