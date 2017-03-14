@@ -1,4 +1,12 @@
-// Define Enemy class
+"use strict";
+
+/** Game Enemy class
+ * Define the moving bugs
+ * @param url, indicate Enemy's showing img
+ * @param x, indicate Enemy's X position
+ * @param y, indicate Enemy's Y position
+ * @param rand, a random number for calculating Enemy's speed 
+ */
 var Enemy = function(url, x, y, rand) {
     // Enemy's location (x, y)
     this.x = x;

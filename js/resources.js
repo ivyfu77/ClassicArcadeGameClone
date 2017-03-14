@@ -2,6 +2,7 @@
  * This is a simple img loading tool. Simplefy loading process
  * Also include a cache area when you try to reload a img can use the img in cache
  */
+"use strict";
 
 (function() {
     var resourceCache = {};

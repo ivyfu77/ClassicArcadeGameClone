@@ -1,9 +1,10 @@
-/* Engine.js
+/** Engine.js
  * This file realize this game's playing functions (Update & Render)
  */
+"use strict";
 
 var Engine = (function(global) {
-    /* Define all the variables
+    /** Define all the variables
      * Create canvas element, get the 2D context
      * Set canvas' width & height then add it to DOM
      */
@@ -19,7 +20,7 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
-    /* Main entrance of the game, call update / render function when necessary */
+    /** Main entrance of the game, call update / render function when necessary */
     function main() {
         /* Get the time distance as a parameter when call update()
          * Help enemies moving at the same speed in different computers
@@ -163,7 +164,7 @@ var Engine = (function(global) {
         }
     }
 
-    /* Render all enemies and player
+    /** Render all enemies and player
      * - Will be called during each main() loop
      */
     function renderEntities() {
